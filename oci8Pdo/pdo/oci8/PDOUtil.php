@@ -1,4 +1,7 @@
 <?php
+
+namespace datalayerru\components\oci8Pdo\pdo\oci8;
+
 /**
  * PDO Userspace Driver for Oracle (oci8)
  *
@@ -6,6 +9,7 @@
  * @package Pdo
  * @subpackage Oci8
  * @author Ben Ramsey <ramsey@php.net>
+ * @author Sergey Zinchenko <zinchenko@datalayer.ru> (refactoring)
  * @copyright Copyright (c) 2009 Ben Ramsey (http://benramsey.com/)
  * @license http://open.benramsey.com/license/mit  MIT License
  */
@@ -13,8 +17,9 @@
 /**
  * A static utility class for PDO userspace classes
  */
-class Oci8PDO_Util
+class PDOUtil
 {
+
     /**
      * Parses a DSN string according to the rules in the PHP manual
      *
@@ -30,14 +35,14 @@ class Oci8PDO_Util
     {
         if (strpos($dsn, ':') !== false) {
             $driver = substr($dsn, 0, strpos($dsn, ':'));
-            $vars = substr($dsn, strpos($dsn, ':') + 1);
+            $vars   = substr($dsn, strpos($dsn, ':') + 1);
 
             if ($driver == 'uri') {
                 return self::parseDsn(file_get_contents($vars), $params);
             } else {
                 $returnParams = array();
                 foreach (explode(';', $vars) as $var) {
-                	$param = explode('=', $var, 2);				//limiting explode to 2 to enable full connection strings
+                    $param = explode('=', $var, 2);    //limiting explode to 2 to enable full connection strings
                     if (in_array($param[0], $params)) {
                         $returnParams[$param[0]] = $param[1];
                     }

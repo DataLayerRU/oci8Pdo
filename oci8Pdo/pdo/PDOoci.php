@@ -6,19 +6,17 @@
  * @package Pdo
  * @subpackage Oci8
  * @author Ben Ramsey <ramsey@php.net>
+ * @author Sergey Zinchenko <zinchenko@datalayer.ru> (refactoring)
  * @copyright Copyright (c) 2009 Ben Ramsey (http://benramsey.com/)
  * @license http://open.benramsey.com/license/mit  MIT License
  */
 
-/**
- * @see Oci8PDO_Util
- */
-require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'oci8'.DIRECTORY_SEPARATOR.'Oci8PDO_Util.php');
+namespace datalayerru\oci8Pdo\pdo;
 
-/**
- * @see Oci8PDO_Statement
- */
-require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'oci8'.DIRECTORY_SEPARATOR.'Oci8PDO_Statement.php');
+use PDO;
+use PDOException;
+use datalayerru\oci8Pdo\pdo\oci8\PDOStatement;
+use datalayerru\oci8Pdo\pdo\oci8\PDOUtil;
 
 /**
  * Oci8 class to mimic the interface of the PDO class
@@ -27,22 +25,8 @@ require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'oci8'.DIRECTORY_SEPARATOR.'O
  * that instanceof checks and type-hinting of existing code will work
  * seamlessly.
  */
-class Oci8PDO extends PDO
+class PDOoci extends PDO
 {
-    /**
-     * Ananalog constant OCI_B_CLOB
-     *
-     * @const int
-     */
-    const PARAM_CLOB = 112;
-
-    /**
-     * Ananalog constant OCI_B_BLOB
-     *
-     * @const int
-     */
-    const PARAM_BLOB = 113;
-
     /**
      * Database handler
      *
@@ -73,47 +57,27 @@ class Oci8PDO extends PDO
      * @param array $options
      * @return void
      */
-    public function __construct($dsn,
-                                $username = null,
-                                $password = null,
-                                array $options = array())
+    public function __construct($dsn, $username = null, $password = null,
+                                $options = array())
     {
-        $parsedDsn = Oci8PDO_Util::parseDsn($dsn, array('dbname', 'charset'));
+        $parsedDsn = PDOUtil::parseDsn($dsn, array('dbname', 'charset'));
 
-        if (isset($options[PDO::ATTR_PERSISTENT])
-            && $options[PDO::ATTR_PERSISTENT]) {
+        if (isset($options[PDO::ATTR_PERSISTENT]) && $options[PDO::ATTR_PERSISTENT]) {
 
-            $this->_dbh = @oci_pconnect(
-                $username,
-                $password,
-                $parsedDsn['dbname'],
-                $parsedDsn['charset']);
-
+            $this->_dbh = oci_pconnect(
+                    $username, $password, $parsedDsn['dbname']);
         } else {
 
-            $this->_dbh = @oci_connect(
-                $username,
-                $password,
-                $parsedDsn['dbname'],
-                $parsedDsn['charset']);
-
+            $this->_dbh = oci_connect(
+                    $username, $password, $parsedDsn['dbname']);
         }
 
         if (!$this->_dbh) {
-            $e = oci_error();
+            $e = \oci_error();
             throw new PDOException($e['message']);
         }
-        
-        $this->_options = $options;
-    }
 
-    /**
-     * Return the resource connection
-     *
-     * @return mixed
-     */
-    public function getDbh() {
-        return $this->_dbh;
+        $this->_options = $options;
     }
 
     /**
@@ -125,10 +89,10 @@ class Oci8PDO extends PDO
      */
     public function prepare($statement, $options = null)
     {
-        $sth = @oci_parse($this->_dbh, $statement);
+        $sth = @\oci_parse($this->_dbh, $statement);
 
         if (!$sth) {
-            $e = oci_error($this->_dbh);
+            $e = \oci_error($this->_dbh);
             throw new PDOException($e['message']);
         }
 
@@ -136,7 +100,7 @@ class Oci8PDO extends PDO
             $options = array();
         }
 
-        return new Oci8PDO_Statement($sth, $this, $options);
+        return new PDOStatement($sth, $this, $options);
     }
 
     /**
@@ -175,7 +139,7 @@ class Oci8PDO extends PDO
             throw new PDOException('There is no active transaction');
         }
 
-        if (oci_commit($this->_dbh)) {
+        if (\oci_commit($this->_dbh)) {
             $this->_isTransaction = false;
             return true;
         }
@@ -194,7 +158,7 @@ class Oci8PDO extends PDO
             throw new PDOException('There is no active transaction');
         }
 
-        if (oci_rollback($this->_dbh)) {
+        if (\oci_rollback($this->_dbh)) {
             $this->_isTransaction = false;
             return true;
         }
@@ -211,12 +175,12 @@ class Oci8PDO extends PDO
      */
     public function setAttribute($attribute, $value)
     {
-    	//433: $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    	//435: $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,$this->emulatePrepare);
-    	//612: $this->setAttribute(PDO::ATTR_CASE,$value); 
-    	//632: $this->setAttribute(PDO::ATTR_ORACLE_NULLS,$value); 
-    	//652: $this->setAttribute(PDO::ATTR_AUTOCOMMIT,$value); 
-    	//672: return $this->setAttribute(PDO::ATTR_PERSISTENT,$value); 
+        //433: $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        //435: $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,$this->emulatePrepare);
+        //612: $this->setAttribute(PDO::ATTR_CASE,$value);
+        //632: $this->setAttribute(PDO::ATTR_ORACLE_NULLS,$value);
+        //652: $this->setAttribute(PDO::ATTR_AUTOCOMMIT,$value);
+        //672: return $this->setAttribute(PDO::ATTR_PERSISTENT,$value);
         $this->_options[$attribute] = $value;
         return true;
     }
@@ -245,9 +209,7 @@ class Oci8PDO extends PDO
      * @return Oci8PDO_Statement
      * @todo Implement support for $fetchType, $typeArg, and $ctorArgs.
      */
-    public function query($query,
-                          $fetchType = null,
-                          $typeArg = null,
+    public function query($query, $fetchType = null, $typeArg = null,
                           array $ctorArgs = array())
     {
         $stmt = $this->prepare($query);
@@ -268,9 +230,9 @@ class Oci8PDO extends PDO
      */
     public function lastInsertId($name = null)
     {
-        trigger_error(
-            'SQLSTATE[IM001]: Driver does not support this function: driver does not support lastInsertId()',
-            E_USER_WARNING);
+        \trigger_error(
+                'SQLSTATE[IM001]: Driver does not support this function: driver does not support lastInsertId()',
+                E_USER_WARNING);
     }
 
     /**
@@ -296,7 +258,7 @@ class Oci8PDO extends PDO
      */
     public function errorInfo()
     {
-        $e = oci_error($this->_dbh);
+        $e = \oci_error($this->_dbh);
 
         if (is_array($e)) {
             return array(
@@ -316,17 +278,17 @@ class Oci8PDO extends PDO
      */
     public function getAttribute($attribute)
     {
-    	//438: $driver=strtolower($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)); 
-    	//602: return $this->getAttribute(PDO::ATTR_CASE); 
-    	//622: return $this->getAttribute(PDO::ATTR_ORACLE_NULLS); 
-    	//642: return $this->getAttribute(PDO::ATTR_AUTOCOMMIT); 
-    	//662: return $this->getAttribute(PDO::ATTR_PERSISTENT); 
-    	//692: return $this->getAttribute(PDO::ATTR_CLIENT_VERSION); 
-    	//702: return $this->getAttribute(PDO::ATTR_CONNECTION_STATUS); 
-    	//711: return $this->getAttribute(PDO::ATTR_PREFETCH); 
-    	//720: return $this->getAttribute(PDO::ATTR_SERVER_INFO); 
-    	//729: return $this->getAttribute(PDO::ATTR_SERVER_VERSION); 
-    	//738: return $this->getAttribute(PDO::ATTR_TIMEOUT); 
+        //438: $driver=strtolower($pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+        //602: return $this->getAttribute(PDO::ATTR_CASE);
+        //622: return $this->getAttribute(PDO::ATTR_ORACLE_NULLS);
+        //642: return $this->getAttribute(PDO::ATTR_AUTOCOMMIT);
+        //662: return $this->getAttribute(PDO::ATTR_PERSISTENT);
+        //692: return $this->getAttribute(PDO::ATTR_CLIENT_VERSION);
+        //702: return $this->getAttribute(PDO::ATTR_CONNECTION_STATUS);
+        //711: return $this->getAttribute(PDO::ATTR_PREFETCH);
+        //720: return $this->getAttribute(PDO::ATTR_SERVER_INFO);
+        //729: return $this->getAttribute(PDO::ATTR_SERVER_VERSION);
+        //738: return $this->getAttribute(PDO::ATTR_TIMEOUT);
         if (isset($this->_options[$attribute])) {
             return $this->_options[$attribute];
         }
@@ -343,9 +305,14 @@ class Oci8PDO extends PDO
      */
     public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
-    	if($parameter_type !== PDO::PARAM_STR) {
-    		throw new PDOException('Only PDO::PARAM_STR is currently implemented for the $parameter_type of Oci8PDO::quote()');
-    	}
-        return "'" . str_replace("'", "''", $string) . "'";
+        if ($parameter_type !== PDO::PARAM_STR) {
+            throw new PDOException('Only PDO::PARAM_STR is currently implemented for the $parameter_type of Oci8PDO::quote()');
+        }
+        return "'".str_replace("'", "''", $string)."'";
+    }
+
+    public function getConnection()
+    {
+        return $this->_dbh;
     }
 }
