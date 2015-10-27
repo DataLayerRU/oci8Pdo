@@ -1,6 +1,6 @@
 <?php
 
-namespace datalayerru\components\oci8Pdo\pdo\oci8;
+namespace datalayerru\oci8Pdo\pdo\oci8;
 
 /**
  * PDO Userspace Driver for Oracle (oci8)
