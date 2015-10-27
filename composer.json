@@ -1,0 +1,27 @@
+{
+    "name": "datalayerru/oci8Pdo",
+    "version": "0.1.1",
+    "description": "Extension for the Yii Framework - Oracle PDO simulation using the PHP OCI8 functions",
+    "keywords": ["yii2", "oci8", "oracle", "component", "PDO"],
+    "type": "yii2-extension",
+    "license": "MIT",
+    "support": {
+        "email": "info@datalayer.ru",
+        "source": "https://github.com/DataLayerRU/oci8Pdo"
+    },
+    "authors": [
+        {
+            "name": "Sergey Zinchenko",
+            "email": "info@datalayer.ru",
+            "homepage": "http://datalayer.ru"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "datalayerru\\oci8Pdo\\": ""
+        }
+    }
+}
