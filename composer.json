@@ -1,5 +1,5 @@
 {
-    "name": "datalayerru/oci8Pdo",
+    "name": "datalayerru/oci8pdo",
     "version": "0.1.1",
     "description": "Extension for the Yii Framework - Oracle PDO simulation using the PHP OCI8 functions",
     "keywords": ["yii2", "oci8", "oracle", "component", "PDO"],
