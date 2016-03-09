@@ -7,12 +7,12 @@ oci8Pdo
 
 oci8Pdo is available through [composer](https://getcomposer.org/)
 
-    composer require datalayerru/oci8Pdo "dev-master"
+    composer require professionalweb/oci8Pdo "dev-master"
   
 Alternatively you can add the following to the `require` section in your `composer.json` manually:
 
 ```json
-"datalayerru/oci8Pdo": "dev-master"
+"professionalweb/oci8Pdo": "dev-master"
 ```
 
 Run `composer update` afterwards.
@@ -23,7 +23,7 @@ Run `composer update` afterwards.
 return [
     'components' => [
         'db' => [
-            'class' => 'datalayerru\oci8Pdo\Connection',
+            'class' => 'professionalweb\oci8Pdo\Connection',
             'dsn' => 'oci:dbname=DBNAME',
             'username' => 'LOGIN',
             'password' => 'PASSWORD',

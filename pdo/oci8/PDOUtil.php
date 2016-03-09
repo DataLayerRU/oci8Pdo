@@ -1,6 +1,6 @@
 <?php
 
-namespace datalayerru\oci8Pdo\pdo\oci8;
+namespace professionalweb\oci8Pdo\pdo\oci8;
 
 /**
  * PDO Userspace Driver for Oracle (oci8)
@@ -9,7 +9,7 @@ namespace datalayerru\oci8Pdo\pdo\oci8;
  * @package Pdo
  * @subpackage Oci8
  * @author Ben Ramsey <ramsey@php.net>
- * @author Sergey Zinchenko <zinchenko@datalayer.ru> (refactoring)
+ * @author Sergey Zinchenko <zinchenko@professional-web.pw> (refactoring)
  * @copyright Copyright (c) 2009 Ben Ramsey (http://benramsey.com/)
  * @license http://open.benramsey.com/license/mit  MIT License
  */

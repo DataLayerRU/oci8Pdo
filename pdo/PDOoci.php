@@ -6,17 +6,17 @@
  * @package Pdo
  * @subpackage Oci8
  * @author Ben Ramsey <ramsey@php.net>
- * @author Sergey Zinchenko <zinchenko@datalayer.ru> (refactoring)
+ * @author Sergey Zinchenko <zinchenko@professional-web.pw> (refactoring)
  * @copyright Copyright (c) 2009 Ben Ramsey (http://benramsey.com/)
  * @license http://open.benramsey.com/license/mit  MIT License
  */
 
-namespace datalayerru\oci8Pdo\pdo;
+namespace professionalweb\oci8Pdo\pdo;
 
 use PDO;
 use PDOException;
-use datalayerru\oci8Pdo\pdo\oci8\PDOStatement;
-use datalayerru\oci8Pdo\pdo\oci8\PDOUtil;
+use professionalweb\oci8Pdo\pdo\oci8\PDOStatement;
+use professionalweb\oci8Pdo\pdo\oci8\PDOUtil;
 
 /**
  * Oci8 class to mimic the interface of the PDO class
